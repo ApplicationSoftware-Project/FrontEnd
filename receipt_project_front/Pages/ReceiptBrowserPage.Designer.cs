@@ -19,7 +19,10 @@ partial class ReceiptBrowserPage
     private Panel photoCard;
     private PictureBox photoBox;
     private Panel infoCard;
-    private Label categoryStoreLabel;
+    private FlowLayoutPanel topRowFlow;
+    private Label categoryLabel;
+    private Label separatorLabel;
+    private Label storeNameLabel;
     private Label dateLabel;
     private Label amountLabel;
     private Panel navPanel;
@@ -34,7 +37,10 @@ partial class ReceiptBrowserPage
         photoCard = new Panel();
         photoBox = new PictureBox();
         infoCard = new Panel();
-        categoryStoreLabel = new Label();
+        topRowFlow = new FlowLayoutPanel();
+        categoryLabel = new Label();
+        separatorLabel = new Label();
+        storeNameLabel = new Label();
         dateLabel = new Label();
         amountLabel = new Label();
         navPanel = new Panel();
@@ -64,17 +70,40 @@ partial class ReceiptBrowserPage
         photoCard.Margin = new Padding(0, 0, 8, 0);
         photoCard.Padding = new Padding(8);
 
-        // categoryStoreLabel
-        categoryStoreLabel.AutoSize = false;
-        categoryStoreLabel.Dock = DockStyle.Top;
-        categoryStoreLabel.Font = AppTheme.H2;
-        categoryStoreLabel.ForeColor = AppTheme.TextPrimary;
-        categoryStoreLabel.Height = 40;
-        categoryStoreLabel.Padding = new Padding(24, 16, 24, 0);
-        categoryStoreLabel.Text = "카테고리  |  상호명";
-        categoryStoreLabel.TextAlign = ContentAlignment.MiddleLeft;
+        // categoryLabel (editable)
+        categoryLabel.AutoSize = true;
+        categoryLabel.Font = AppTheme.H2;
+        categoryLabel.ForeColor = AppTheme.TextPrimary;
+        categoryLabel.Margin = new Padding(0, 0, 0, 0);
+        categoryLabel.Text = "카테고리";
 
-        // dateLabel
+        // separatorLabel (static, not editable)
+        separatorLabel.AutoSize = true;
+        separatorLabel.Font = AppTheme.H2;
+        separatorLabel.ForeColor = AppTheme.TextSecondary;
+        separatorLabel.Margin = new Padding(8, 0, 8, 0);
+        separatorLabel.Text = "|";
+
+        // storeNameLabel (editable)
+        storeNameLabel.AutoSize = true;
+        storeNameLabel.Font = AppTheme.H2;
+        storeNameLabel.ForeColor = AppTheme.TextPrimary;
+        storeNameLabel.Margin = new Padding(0, 0, 0, 0);
+        storeNameLabel.Text = "상호명";
+
+        // topRowFlow — height covers the H2 font (~25px) plus top padding plus
+        // bottom breathing room, so dateLabel below doesn't overlap.
+        topRowFlow.AutoSize = false;
+        topRowFlow.Controls.Add(categoryLabel);
+        topRowFlow.Controls.Add(separatorLabel);
+        topRowFlow.Controls.Add(storeNameLabel);
+        topRowFlow.Dock = DockStyle.Top;
+        topRowFlow.FlowDirection = FlowDirection.LeftToRight;
+        topRowFlow.Height = 60;
+        topRowFlow.Padding = new Padding(24, 20, 24, 8);
+        topRowFlow.WrapContents = false;
+
+        // dateLabel (editable)
         dateLabel.AutoSize = false;
         dateLabel.Dock = DockStyle.Top;
         dateLabel.Font = AppTheme.Body;
@@ -84,7 +113,7 @@ partial class ReceiptBrowserPage
         dateLabel.Text = "yyyy-MM-dd HH:mm";
         dateLabel.TextAlign = ContentAlignment.TopLeft;
 
-        // amountLabel
+        // amountLabel (editable)
         amountLabel.AutoSize = false;
         amountLabel.Dock = DockStyle.Top;
         amountLabel.Font = AppTheme.H2;
@@ -94,12 +123,12 @@ partial class ReceiptBrowserPage
         amountLabel.Text = "합계 -";
         amountLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-        // infoCard
+        // infoCard (Dock=Top stack: amount, date, topRow — order is reversed because Dock=Top stacks bottom-first)
         infoCard.BackColor = AppTheme.CardBg;
         infoCard.BorderStyle = BorderStyle.FixedSingle;
         infoCard.Controls.Add(amountLabel);
         infoCard.Controls.Add(dateLabel);
-        infoCard.Controls.Add(categoryStoreLabel);
+        infoCard.Controls.Add(topRowFlow);
         infoCard.Dock = DockStyle.Fill;
         infoCard.Margin = new Padding(8, 0, 0, 0);
 

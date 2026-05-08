@@ -7,6 +7,10 @@ namespace receipt_project_front.Pages;
 
 public partial class EditPage : UserControl, IRefreshablePage
 {
+    public event EventHandler? SaveCompleted;
+
+    private bool _saving;
+
     public EditPage()
     {
         InitializeComponent();
@@ -26,11 +30,15 @@ public partial class EditPage : UserControl, IRefreshablePage
 
     private void LoadFromUpload(UploadReceiptResult upload)
     {
+        // upload.ImagePath is a server-relative path; show the local file the
+        // user just uploaded so the photo appears immediately.
+        var localPath = AppState.Current.PendingUploadLocalImagePath;
         try
         {
             photoBox.Image?.Dispose();
-            if (File.Exists(upload.ImagePath))
-                photoBox.Image = Image.FromFile(upload.ImagePath);
+            photoBox.Image = !string.IsNullOrEmpty(localPath) && File.Exists(localPath)
+                ? Image.FromFile(localPath)
+                : null;
         }
         catch
         {
@@ -44,6 +52,8 @@ public partial class EditPage : UserControl, IRefreshablePage
         aiSuggestionLabel.Text = string.IsNullOrEmpty(upload.AiSuggestedCategory)
             ? "AI 추천: 없음"
             : $"AI 추천: {upload.AiSuggestedCategory}";
+
+        submitButton.Enabled = true;
     }
 
     private void ClearForm()
@@ -55,12 +65,66 @@ public partial class EditPage : UserControl, IRefreshablePage
         purchasedAtPicker.Value = DateTime.Now;
         categoryTextBox.Text = string.Empty;
         aiSuggestionLabel.Text = "업로드된 영수증이 없습니다";
+        submitButton.Enabled = false;
     }
 
-    private void SubmitButton_Click(object? sender, EventArgs e)
+    private async void SubmitButton_Click(object? sender, EventArgs e)
     {
-        // TODO: POST /api/receipts/{id}/confirm with { FinalCategory = categoryTextBox.Text }
-        MessageBox.Show("저장되었습니다. (스캐폴딩)", "No More Receipts",
-            MessageBoxButtons.OK, MessageBoxIcon.Information);
+        if (_saving) return;
+
+        var pending = AppState.Current.PendingUpload;
+        if (pending is null)
+        {
+            MessageBox.Show("저장할 영수증이 없습니다.", "No More Receipts",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+            return;
+        }
+
+        var category = categoryTextBox.Text.Trim();
+        if (string.IsNullOrEmpty(category))
+        {
+            MessageBox.Show("카테고리를 입력해 주세요.", "No More Receipts",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            categoryTextBox.Focus();
+            return;
+        }
+
+        SetSaving(true);
+        try
+        {
+            await ReceiptApi.ConfirmCategoryAsync(pending.ReceiptId, category);
+
+            AppState.Current.PendingUpload = null;
+            AppState.Current.PendingUploadLocalImagePath = null;
+
+            SaveCompleted?.Invoke(this, EventArgs.Empty);
+        }
+        catch (ApiException apiEx)
+        {
+            MessageBox.Show(apiEx.Message, "저장 실패",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        catch (HttpRequestException ex)
+        {
+            MessageBox.Show($"백엔드에 연결할 수 없습니다.\n{ex.Message}", "저장 실패",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"저장 실패: {ex.Message}", "저장 실패",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        finally
+        {
+            SetSaving(false);
+        }
+    }
+
+    private void SetSaving(bool saving)
+    {
+        _saving = saving;
+        submitButton.Enabled = !saving;
+        submitButton.Text = saving ? "저장 중..." : "저장";
+        categoryTextBox.Enabled = !saving;
     }
 }

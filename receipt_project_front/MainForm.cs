@@ -35,6 +35,7 @@ public partial class MainForm : Form
         _pages[NavItem.Edit] = edit;
 
         upload.UploadCompleted += (_, _) => Navigate(NavItem.Edit, highlight: NavItem.Upload);
+        edit.SaveCompleted += (_, _) => Navigate(NavItem.Overview);
 
         if (_pages[NavItem.Settings] is SettingsPage settings)
         {

@@ -2,7 +2,7 @@ using receipt_project_front.UI;
 
 namespace receipt_project_front;
 
-partial class LoginForm
+partial class RegisterForm
 {
     private System.ComponentModel.IContainer components = null;
 
@@ -20,10 +20,12 @@ partial class LoginForm
     private Panel contentPanel;
     private Label titleLabel;
     private TextBox emailBox;
+    private TextBox displayNameBox;
     private TextBox passwordBox;
+    private TextBox confirmBox;
     private Label errorLabel;
-    private Button loginButton;
-    private LinkLabel registerLink;
+    private Button registerButton;
+    private Button cancelButton;
 
     private void InitializeComponent()
     {
@@ -34,10 +36,12 @@ partial class LoginForm
         contentPanel = new Panel();
         titleLabel = new Label();
         emailBox = new TextBox();
+        displayNameBox = new TextBox();
         passwordBox = new TextBox();
+        confirmBox = new TextBox();
         errorLabel = new Label();
-        loginButton = new Button();
-        registerLink = new LinkLabel();
+        registerButton = new Button();
+        cancelButton = new Button();
         sidebarPanel.SuspendLayout();
         sidebarHeader.SuspendLayout();
         contentPanel.SuspendLayout();
@@ -51,7 +55,7 @@ partial class LoginForm
         sidebarPanel.Location = new Point(0, 0);
         sidebarPanel.Margin = new Padding(4, 5, 4, 5);
         sidebarPanel.Name = "sidebarPanel";
-        sidebarPanel.Size = new Size(343, 1067);
+        sidebarPanel.Size = new Size(343, 967);
         sidebarPanel.TabIndex = 1;
         // 
         // sidebarHeader
@@ -95,29 +99,30 @@ partial class LoginForm
         contentPanel.BackColor = Color.FromArgb(248, 250, 252);
         contentPanel.Controls.Add(titleLabel);
         contentPanel.Controls.Add(emailBox);
+        contentPanel.Controls.Add(displayNameBox);
         contentPanel.Controls.Add(passwordBox);
+        contentPanel.Controls.Add(confirmBox);
         contentPanel.Controls.Add(errorLabel);
-        contentPanel.Controls.Add(loginButton);
-        contentPanel.Controls.Add(registerLink);
+        contentPanel.Controls.Add(registerButton);
+        contentPanel.Controls.Add(cancelButton);
         contentPanel.Dock = DockStyle.Fill;
         contentPanel.Location = new Point(343, 0);
         contentPanel.Margin = new Padding(4, 5, 4, 5);
         contentPanel.Name = "contentPanel";
-        contentPanel.Size = new Size(1120, 1067);
+        contentPanel.Size = new Size(771, 967);
         contentPanel.TabIndex = 0;
-        //contentPanel.Resize += ContentPanel_Resize; 이 것때문에 자꾸 옹기종기 모임
         // 
         // titleLabel
         // 
         titleLabel.Anchor = AnchorStyles.None;
         titleLabel.Font = new Font("Segoe UI", 18F, FontStyle.Bold);
         titleLabel.ForeColor = Color.FromArgb(15, 23, 42);
-        titleLabel.Location = new Point(396, 150);
+        titleLabel.Location = new Point(239, 163);
         titleLabel.Margin = new Padding(4, 0, 4, 0);
         titleLabel.Name = "titleLabel";
         titleLabel.Size = new Size(429, 60);
         titleLabel.TabIndex = 0;
-        titleLabel.Text = "로그인";
+        titleLabel.Text = "회원가입";
         titleLabel.TextAlign = ContentAlignment.MiddleCenter;
         // 
         // emailBox
@@ -125,85 +130,112 @@ partial class LoginForm
         emailBox.Anchor = AnchorStyles.None;
         emailBox.BorderStyle = BorderStyle.FixedSingle;
         emailBox.Font = new Font("Segoe UI", 12F);
-        emailBox.Location = new Point(396, 268);
+        emailBox.Location = new Point(240, 259);
         emailBox.Margin = new Padding(4, 5, 4, 5);
         emailBox.Name = "emailBox";
         emailBox.PlaceholderText = "이메일";
         emailBox.Size = new Size(428, 39);
         emailBox.TabIndex = 1;
         // 
+        // displayNameBox
+        // 
+        displayNameBox.Anchor = AnchorStyles.None;
+        displayNameBox.BorderStyle = BorderStyle.FixedSingle;
+        displayNameBox.Font = new Font("Segoe UI", 12F);
+        displayNameBox.Location = new Point(241, 322);
+        displayNameBox.Margin = new Padding(4, 5, 4, 5);
+        displayNameBox.Name = "displayNameBox";
+        displayNameBox.PlaceholderText = "닉네임 (표시 이름)";
+        displayNameBox.Size = new Size(428, 39);
+        displayNameBox.TabIndex = 2;
+        // 
         // passwordBox
         // 
         passwordBox.Anchor = AnchorStyles.None;
         passwordBox.BorderStyle = BorderStyle.FixedSingle;
         passwordBox.Font = new Font("Segoe UI", 12F);
-        passwordBox.Location = new Point(395, 350);
+        passwordBox.Location = new Point(240, 386);
         passwordBox.Margin = new Padding(4, 5, 4, 5);
         passwordBox.Name = "passwordBox";
         passwordBox.PasswordChar = '●';
-        passwordBox.PlaceholderText = "비밀번호";
+        passwordBox.PlaceholderText = "비밀번호 (6자 이상)";
         passwordBox.Size = new Size(428, 39);
-        passwordBox.TabIndex = 2;
+        passwordBox.TabIndex = 3;
+        // 
+        // confirmBox
+        // 
+        confirmBox.Anchor = AnchorStyles.None;
+        confirmBox.BorderStyle = BorderStyle.FixedSingle;
+        confirmBox.Font = new Font("Segoe UI", 12F);
+        confirmBox.Location = new Point(243, 447);
+        confirmBox.Margin = new Padding(4, 5, 4, 5);
+        confirmBox.Name = "confirmBox";
+        confirmBox.PasswordChar = '●';
+        confirmBox.PlaceholderText = "비밀번호 확인";
+        confirmBox.Size = new Size(428, 39);
+        confirmBox.TabIndex = 4;
         // 
         // errorLabel
         // 
         errorLabel.Anchor = AnchorStyles.None;
         errorLabel.Font = new Font("Segoe UI", 9F);
         errorLabel.ForeColor = Color.FromArgb(239, 68, 68);
-        errorLabel.Location = new Point(396, 517);
+        errorLabel.Location = new Point(240, 523);
         errorLabel.Margin = new Padding(4, 0, 4, 0);
         errorLabel.Name = "errorLabel";
         errorLabel.Size = new Size(429, 33);
-        errorLabel.TabIndex = 3;
+        errorLabel.TabIndex = 5;
         errorLabel.TextAlign = ContentAlignment.MiddleCenter;
         errorLabel.Visible = false;
-        errorLabel.Click += errorLabel_Click;
         // 
-        // loginButton
+        // registerButton
         // 
-        loginButton.Anchor = AnchorStyles.None;
-        loginButton.BackColor = Color.FromArgb(59, 130, 246);
-        loginButton.FlatAppearance.BorderSize = 0;
-        loginButton.FlatStyle = FlatStyle.Flat;
-        loginButton.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
-        loginButton.ForeColor = Color.White;
-        loginButton.Location = new Point(395, 607);
-        loginButton.Margin = new Padding(4, 5, 4, 5);
-        loginButton.Name = "loginButton";
-        loginButton.Size = new Size(429, 73);
-        loginButton.TabIndex = 4;
-        loginButton.Text = "로그인";
-        loginButton.UseVisualStyleBackColor = false;
-        loginButton.Click += LoginButton_Click;
+        registerButton.Anchor = AnchorStyles.None;
+        registerButton.BackColor = Color.FromArgb(59, 130, 246);
+        registerButton.FlatAppearance.BorderSize = 0;
+        registerButton.FlatStyle = FlatStyle.Flat;
+        registerButton.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+        registerButton.ForeColor = Color.White;
+        registerButton.Location = new Point(240, 619);
+        registerButton.Margin = new Padding(4, 5, 4, 5);
+        registerButton.Name = "registerButton";
+        registerButton.Size = new Size(429, 73);
+        registerButton.TabIndex = 6;
+        registerButton.Text = "가입하기";
+        registerButton.UseVisualStyleBackColor = false;
         // 
-        // registerLink
+        // cancelButton
         // 
-        registerLink.Anchor = AnchorStyles.None;
-        registerLink.Font = new Font("Segoe UI", 9F);
-        registerLink.LinkColor = Color.FromArgb(59, 130, 246);
-        registerLink.Location = new Point(396, 435);
-        registerLink.Margin = new Padding(4, 0, 4, 0);
-        registerLink.Name = "registerLink";
-        registerLink.Size = new Size(429, 33);
-        registerLink.TabIndex = 5;
-        registerLink.TabStop = true;
-        registerLink.Text = "계정이 없으신가요? 회원가입";
-        registerLink.TextAlign = ContentAlignment.MiddleCenter;
+        cancelButton.Anchor = AnchorStyles.None;
+        cancelButton.BackColor = Color.Transparent;
+        cancelButton.FlatAppearance.BorderSize = 0;
+        cancelButton.FlatStyle = FlatStyle.Flat;
+        cancelButton.Font = new Font("Segoe UI", 9F);
+        cancelButton.ForeColor = Color.FromArgb(100, 116, 139);
+        cancelButton.Location = new Point(240, 720);
+        cancelButton.Margin = new Padding(4, 5, 4, 5);
+        cancelButton.Name = "cancelButton";
+        cancelButton.Size = new Size(429, 40);
+        cancelButton.TabIndex = 7;
+        cancelButton.Text = "취소";
+        cancelButton.UseVisualStyleBackColor = false;
+        cancelButton.Click += CancelButton_Click;
         // 
-        // LoginForm
+        // RegisterForm
         // 
-        AcceptButton = loginButton;
+        AcceptButton = registerButton;
         AutoScaleDimensions = new SizeF(10F, 25F);
         AutoScaleMode = AutoScaleMode.Font;
         BackColor = Color.FromArgb(248, 250, 252);
-        ClientSize = new Size(1463, 1067);
+        CancelButton = cancelButton;
+        ClientSize = new Size(1114, 967);
         Controls.Add(contentPanel);
         Controls.Add(sidebarPanel);
         Margin = new Padding(4, 5, 4, 5);
-        MinimumSize = new Size(1453, 1029);
-        Name = "LoginForm";
-        StartPosition = FormStartPosition.CenterScreen;
-        Text = "No More Receipts";
+        MinimumSize = new Size(1105, 929);
+        Name = "RegisterForm";
+        StartPosition = FormStartPosition.CenterParent;
+        Text = "No More Receipts - 회원가입";
         sidebarPanel.ResumeLayout(false);
         sidebarHeader.ResumeLayout(false);
         sidebarHeader.PerformLayout();

@@ -61,3 +61,5 @@ public record ConfirmReceiptCategoryResult(
     bool AiWasCorrect);
 
 public record ApiError(string Message);
+
+public record MonthlyTrend(int Year, int Month, int TotalCount, double TotalAmount);

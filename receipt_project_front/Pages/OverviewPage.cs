@@ -1,5 +1,6 @@
 using System.Globalization;
 using receipt_project_front.Models;
+using receipt_project_front.Services;
 using receipt_project_front.UI;
 
 namespace receipt_project_front.Pages;
@@ -13,9 +14,17 @@ public partial class OverviewPage : UserControl, IRefreshablePage
         SetRecentReceipts(Array.Empty<ReceiptSummary>());
     }
 
-    public void OnNavigatedTo()
+    public async void OnNavigatedTo()
     {
-        // TODO: GET /api/receipts and aggregate the current month's spend.
+        SetMonthlyExpense(0m);
+        try
+        {
+            var trend = await ReceiptApi.GetMonthlyTrendAsync();
+            var now = DateTime.Now;
+            var thisMonth = trend.FirstOrDefault(t => t.Year == now.Year && t.Month == now.Month);
+            SetMonthlyExpense(thisMonth is not null ? (decimal)thisMonth.TotalAmount : 0m);
+        }
+        catch { }
     }
 
     public void SetMonthlyExpense(decimal amount)

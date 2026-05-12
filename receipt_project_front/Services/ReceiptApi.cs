@@ -81,6 +81,22 @@ internal static class ReceiptApi
         throw new ApiException((int)response.StatusCode, FormatGenericError(response.StatusCode, body));
     }
 
+    public static async Task<IReadOnlyList<MonthlyTrend>> GetMonthlyTrendAsync(CancellationToken ct = default)
+    {
+        using var response = await ApiClient.ForCurrentUser()
+            .GetAsync("/api/analysis/monthly-trend", ct);
+
+        var body = await response.Content.ReadAsStringAsync(ct);
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            return JsonSerializer.Deserialize<IReadOnlyList<MonthlyTrend>>(body, JsonOptions)
+                   ?? Array.Empty<MonthlyTrend>();
+        }
+
+        throw new ApiException((int)response.StatusCode, FormatGenericError(response.StatusCode, body));
+    }
+
     public static async Task<Image> GetImageAsync(Guid receiptId, CancellationToken ct = default)
     {
         using var response = await ApiClient.ForCurrentUser()

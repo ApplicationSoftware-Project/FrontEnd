@@ -1,4 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup />
+  <ItemGroup>
+    <Compile Update="LoginForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Pages\AnalyticsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Pages\EditPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Pages\OverviewPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Pages\ReceiptBrowserPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Pages\SettingsPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="Pages\UploadPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Update="RegisterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+  </ItemGroup>
 </Project>

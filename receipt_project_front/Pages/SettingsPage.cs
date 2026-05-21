@@ -9,7 +9,6 @@ public partial class SettingsPage : UserControl, IRefreshablePage
 
     private bool _savingProfile;
     private bool _changingPassword;
-    private bool _savingNotifications;
 
     public SettingsPage()
     {
@@ -17,12 +16,11 @@ public partial class SettingsPage : UserControl, IRefreshablePage
     }
 
     // ── 페이지 진입 ───────────────────────────────────
-    public async void OnNavigatedTo()
+    public void OnNavigatedTo()
     {
         LoadUserInfo();
         devTokenTextBox.Text = AppState.Current.AccessToken ?? string.Empty;
         UpdateTokenStatus();
-        await LoadNotificationsAsync();
     }
 
     private void LoadUserInfo()
@@ -58,13 +56,10 @@ public partial class SettingsPage : UserControl, IRefreshablePage
         {
             await AuthApi.UpdateProfileAsync(displayName);
 
-            // AppState 로컬 반영
             if (AppState.Current.CurrentUser is not null)
-            {
                 AppState.Current.CurrentUser = AppState.Current.CurrentUser
                     with
                 { DisplayName = displayName };
-            }
 
             profileNameLabel.Text = displayName;
             avatarInitialLabel.Text = displayName[0].ToString().ToUpper();
@@ -163,69 +158,6 @@ public partial class SettingsPage : UserControl, IRefreshablePage
     {
         passwordStatusLabel.Text = message;
         passwordStatusLabel.ForeColor = isError ? AppTheme.Danger : AppTheme.Success;
-    }
-
-    // ── 알림 설정 ─────────────────────────────────────
-    private async Task LoadNotificationsAsync()
-    {
-        try
-        {
-            var result = await AuthApi.GetNotificationsAsync();
-            emailNotificationCheckBox.Checked = result.EmailNotification;
-            pushNotificationCheckBox.Checked = result.PushNotification;
-        }
-        catch { /* 실패해도 기본값(false) 유지 */ }
-    }
-
-    private async void SaveNotificationsButton_Click(object? sender, EventArgs e)
-    {
-        if (_savingNotifications) return;
-
-        SetNotificationBusy(true);
-        try
-        {
-            var result = await AuthApi.UpdateNotificationsAsync(
-                emailNotificationCheckBox.Checked,
-                pushNotificationCheckBox.Checked);
-
-            // AppState 로컬 반영
-            if (AppState.Current.CurrentUser is not null)
-            {
-                AppState.Current.CurrentUser = AppState.Current.CurrentUser
-                    with
-                {
-                    EmailNotification = result.EmailNotification,
-                    PushNotification = result.PushNotification
-                };
-            }
-
-            SetNotificationStatus("저장되었습니다.", isError: false);
-        }
-        catch (AuthException ex)
-        {
-            SetNotificationStatus(ex.Message, isError: true);
-        }
-        catch (HttpRequestException)
-        {
-            SetNotificationStatus("서버에 연결할 수 없습니다.", isError: true);
-        }
-        finally
-        {
-            SetNotificationBusy(false);
-        }
-    }
-
-    private void SetNotificationBusy(bool busy)
-    {
-        _savingNotifications = busy;
-        saveNotificationsButton.Enabled = !busy;
-        saveNotificationsButton.Text = busy ? "저장 중..." : "알림 저장";
-    }
-
-    private void SetNotificationStatus(string message, bool isError)
-    {
-        notificationStatusLabel.Text = message;
-        notificationStatusLabel.ForeColor = isError ? AppTheme.Danger : AppTheme.Success;
     }
 
     // ── 개발자 토큰 (임시) ────────────────────────────

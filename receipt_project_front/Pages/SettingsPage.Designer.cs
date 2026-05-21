@@ -13,18 +13,15 @@ partial class SettingsPage
         base.Dispose(disposing);
     }
 
-    // ── 레이아웃 ──────────────────────────────────────
     private TableLayoutPanel rootLayout;
     private Label titleLabel;
     private Panel profileCard;
 
-    // ── 프로필 헤더 ───────────────────────────────────
     private Panel avatarPanel;
     private Label avatarInitialLabel;
     private Label profileNameLabel;
     private Label profileEmailLabel;
 
-    // ── 프로필 수정 ───────────────────────────────────
     private Label nameFieldLabel;
     private TextBox nameTextBox;
     private Label emailFieldLabel;
@@ -32,7 +29,6 @@ partial class SettingsPage
     private Button saveProfileButton;
     private Label profileStatusLabel;
 
-    // ── 비밀번호 변경 ─────────────────────────────────
     private Label passwordSectionLabel;
     private Label currentPasswordLabel;
     private TextBox currentPasswordBox;
@@ -43,14 +39,6 @@ partial class SettingsPage
     private Button changePasswordButton;
     private Label passwordStatusLabel;
 
-    // ── 알림 설정 ─────────────────────────────────────
-    private Label notificationSectionLabel;
-    private CheckBox emailNotificationCheckBox;
-    private CheckBox pushNotificationCheckBox;
-    private Button saveNotificationsButton;
-    private Label notificationStatusLabel;
-
-    // ── 개발자 (임시) ─────────────────────────────────
     private Label devSectionHeaderLabel;
     private Label devSectionWarningLabel;
     private Label devTokenLabel;
@@ -58,7 +46,6 @@ partial class SettingsPage
     private Button saveTokenButton;
     private Label tokenStatusLabel;
 
-    // ── 로그아웃 ──────────────────────────────────────
     private Button signOutButton;
 
     private void InitializeComponent()
@@ -88,12 +75,6 @@ partial class SettingsPage
         confirmPasswordBox = new TextBox();
         changePasswordButton = new Button();
         passwordStatusLabel = new Label();
-
-        notificationSectionLabel = new Label();
-        emailNotificationCheckBox = new CheckBox();
-        pushNotificationCheckBox = new CheckBox();
-        saveNotificationsButton = new Button();
-        notificationStatusLabel = new Label();
 
         devSectionHeaderLabel = new Label();
         devSectionWarningLabel = new Label();
@@ -181,7 +162,6 @@ partial class SettingsPage
         profileStatusLabel.Location = new Point(200, 290);
         profileStatusLabel.Text = string.Empty;
 
-        // ── 구분선 ────────────────────────────────────
         // ── 비밀번호 변경 ─────────────────────────────
         passwordSectionLabel.AutoSize = true;
         passwordSectionLabel.Font = AppTheme.H3;
@@ -242,64 +222,28 @@ partial class SettingsPage
         passwordStatusLabel.Location = new Point(200, 598);
         passwordStatusLabel.Text = string.Empty;
 
-        // ── 알림 설정 ─────────────────────────────────
-        notificationSectionLabel.AutoSize = true;
-        notificationSectionLabel.Font = AppTheme.H3;
-        notificationSectionLabel.ForeColor = AppTheme.TextPrimary;
-        notificationSectionLabel.Location = new Point(28, 656);
-        notificationSectionLabel.Text = "알림 설정";
-
-        emailNotificationCheckBox.AutoSize = true;
-        emailNotificationCheckBox.Font = AppTheme.Body;
-        emailNotificationCheckBox.ForeColor = AppTheme.TextPrimary;
-        emailNotificationCheckBox.Location = new Point(28, 690);
-        emailNotificationCheckBox.Text = "이메일 알림 수신";
-
-        pushNotificationCheckBox.AutoSize = true;
-        pushNotificationCheckBox.Font = AppTheme.Body;
-        pushNotificationCheckBox.ForeColor = AppTheme.TextPrimary;
-        pushNotificationCheckBox.Location = new Point(28, 720);
-        pushNotificationCheckBox.Text = "푸시 알림 수신";
-
-        saveNotificationsButton.BackColor = AppTheme.Accent;
-        saveNotificationsButton.FlatAppearance.BorderSize = 0;
-        saveNotificationsButton.FlatStyle = FlatStyle.Flat;
-        saveNotificationsButton.Font = AppTheme.BodyBold;
-        saveNotificationsButton.ForeColor = Color.White;
-        saveNotificationsButton.Location = new Point(28, 756);
-        saveNotificationsButton.Size = new Size(160, 36);
-        saveNotificationsButton.Text = "알림 저장";
-        saveNotificationsButton.UseVisualStyleBackColor = false;
-        saveNotificationsButton.Click += SaveNotificationsButton_Click;
-
-        notificationStatusLabel.AutoSize = true;
-        notificationStatusLabel.Font = AppTheme.Body;
-        notificationStatusLabel.ForeColor = AppTheme.TextMuted;
-        notificationStatusLabel.Location = new Point(200, 766);
-        notificationStatusLabel.Text = string.Empty;
-
         // ── 개발자 (임시) ─────────────────────────────
         devSectionHeaderLabel.AutoSize = true;
         devSectionHeaderLabel.Font = AppTheme.H3;
         devSectionHeaderLabel.ForeColor = AppTheme.TextPrimary;
-        devSectionHeaderLabel.Location = new Point(28, 824);
+        devSectionHeaderLabel.Location = new Point(28, 656);
         devSectionHeaderLabel.Text = "개발자 (임시)";
 
         devSectionWarningLabel.AutoSize = true;
         devSectionWarningLabel.Font = AppTheme.Caption;
         devSectionWarningLabel.ForeColor = AppTheme.Danger;
-        devSectionWarningLabel.Location = new Point(28, 850);
+        devSectionWarningLabel.Location = new Point(28, 682);
         devSectionWarningLabel.Text = "로그인 UI 구현 전까지 임시 사용. 프로덕션 빌드 전에 제거됩니다.";
 
         devTokenLabel.AutoSize = true;
         devTokenLabel.Font = AppTheme.BodyBold;
         devTokenLabel.ForeColor = AppTheme.TextPrimary;
-        devTokenLabel.Location = new Point(28, 880);
+        devTokenLabel.Location = new Point(28, 712);
         devTokenLabel.Text = "Dev Access Token (JWT)";
 
         devTokenTextBox.BorderStyle = BorderStyle.FixedSingle;
         devTokenTextBox.Font = new Font("Consolas", 9.5f);
-        devTokenTextBox.Location = new Point(28, 904);
+        devTokenTextBox.Location = new Point(28, 736);
         devTokenTextBox.Multiline = true;
         devTokenTextBox.ScrollBars = ScrollBars.Vertical;
         devTokenTextBox.Size = new Size(680, 80);
@@ -310,7 +254,7 @@ partial class SettingsPage
         saveTokenButton.FlatStyle = FlatStyle.Flat;
         saveTokenButton.Font = AppTheme.BodyBold;
         saveTokenButton.ForeColor = Color.White;
-        saveTokenButton.Location = new Point(28, 996);
+        saveTokenButton.Location = new Point(28, 828);
         saveTokenButton.Size = new Size(120, 36);
         saveTokenButton.Text = "저장";
         saveTokenButton.UseVisualStyleBackColor = false;
@@ -319,7 +263,7 @@ partial class SettingsPage
         tokenStatusLabel.AutoSize = true;
         tokenStatusLabel.Font = AppTheme.Body;
         tokenStatusLabel.ForeColor = AppTheme.TextMuted;
-        tokenStatusLabel.Location = new Point(160, 1006);
+        tokenStatusLabel.Location = new Point(160, 838);
         tokenStatusLabel.Text = "토큰 없음";
 
         // ── 로그아웃 ──────────────────────────────────
@@ -329,7 +273,7 @@ partial class SettingsPage
         signOutButton.FlatStyle = FlatStyle.Flat;
         signOutButton.Font = AppTheme.BodyBold;
         signOutButton.ForeColor = AppTheme.Danger;
-        signOutButton.Location = new Point(28, 1060);
+        signOutButton.Location = new Point(28, 892);
         signOutButton.Size = new Size(180, 44);
         signOutButton.Text = "로그아웃";
         signOutButton.UseVisualStyleBackColor = false;
@@ -357,11 +301,6 @@ partial class SettingsPage
         profileCard.Controls.Add(confirmPasswordBox);
         profileCard.Controls.Add(changePasswordButton);
         profileCard.Controls.Add(passwordStatusLabel);
-        profileCard.Controls.Add(notificationSectionLabel);
-        profileCard.Controls.Add(emailNotificationCheckBox);
-        profileCard.Controls.Add(pushNotificationCheckBox);
-        profileCard.Controls.Add(saveNotificationsButton);
-        profileCard.Controls.Add(notificationStatusLabel);
         profileCard.Controls.Add(devSectionHeaderLabel);
         profileCard.Controls.Add(devSectionWarningLabel);
         profileCard.Controls.Add(devTokenLabel);

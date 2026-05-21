@@ -3,7 +3,7 @@ namespace receipt_project_front;
 internal static class Program
 {
     // Set to true to bypass the login screen and access the application directly
-    public const bool LOGIN_FLAG = true;
+    public const bool LOGIN_FLAG = false;
 
     [STAThread]
     static void Main()

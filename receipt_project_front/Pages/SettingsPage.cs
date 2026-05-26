@@ -19,8 +19,6 @@ public partial class SettingsPage : UserControl, IRefreshablePage
     public void OnNavigatedTo()
     {
         LoadUserInfo();
-        devTokenTextBox.Text = AppState.Current.AccessToken ?? string.Empty;
-        UpdateTokenStatus();
     }
 
     private void LoadUserInfo()
@@ -158,32 +156,6 @@ public partial class SettingsPage : UserControl, IRefreshablePage
     {
         passwordStatusLabel.Text = message;
         passwordStatusLabel.ForeColor = isError ? AppTheme.Danger : AppTheme.Success;
-    }
-
-    // ── 개발자 토큰 (임시) ────────────────────────────
-    private void SaveTokenButton_Click(object? sender, EventArgs e)
-    {
-        var token = devTokenTextBox.Text.Trim();
-        AppState.Current.AccessToken = string.IsNullOrEmpty(token) ? null : token;
-        UpdateTokenStatus();
-    }
-
-    private void UpdateTokenStatus()
-    {
-        var token = AppState.Current.AccessToken;
-        if (string.IsNullOrEmpty(token))
-        {
-            tokenStatusLabel.Text = "토큰 없음";
-            tokenStatusLabel.ForeColor = AppTheme.TextMuted;
-        }
-        else
-        {
-            var preview = token.Length > 24
-                ? token.Substring(0, 12) + "…" + token.Substring(token.Length - 8)
-                : token;
-            tokenStatusLabel.Text = $"저장됨 ({preview})";
-            tokenStatusLabel.ForeColor = AppTheme.Success;
-        }
     }
 
     // ── 로그아웃 ──────────────────────────────────────

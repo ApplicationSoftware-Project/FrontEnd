@@ -39,13 +39,6 @@ partial class SettingsPage
     private Button changePasswordButton;
     private Label passwordStatusLabel;
 
-    private Label devSectionHeaderLabel;
-    private Label devSectionWarningLabel;
-    private Label devTokenLabel;
-    private TextBox devTokenTextBox;
-    private Button saveTokenButton;
-    private Label tokenStatusLabel;
-
     private Button signOutButton;
 
     private void InitializeComponent()
@@ -75,13 +68,6 @@ partial class SettingsPage
         confirmPasswordBox = new TextBox();
         changePasswordButton = new Button();
         passwordStatusLabel = new Label();
-
-        devSectionHeaderLabel = new Label();
-        devSectionWarningLabel = new Label();
-        devTokenLabel = new Label();
-        devTokenTextBox = new TextBox();
-        saveTokenButton = new Button();
-        tokenStatusLabel = new Label();
 
         signOutButton = new Button();
 
@@ -222,50 +208,6 @@ partial class SettingsPage
         passwordStatusLabel.Location = new Point(200, 598);
         passwordStatusLabel.Text = string.Empty;
 
-        // ── 개발자 (임시) ─────────────────────────────
-        devSectionHeaderLabel.AutoSize = true;
-        devSectionHeaderLabel.Font = AppTheme.H3;
-        devSectionHeaderLabel.ForeColor = AppTheme.TextPrimary;
-        devSectionHeaderLabel.Location = new Point(28, 656);
-        devSectionHeaderLabel.Text = "개발자 (임시)";
-
-        devSectionWarningLabel.AutoSize = true;
-        devSectionWarningLabel.Font = AppTheme.Caption;
-        devSectionWarningLabel.ForeColor = AppTheme.Danger;
-        devSectionWarningLabel.Location = new Point(28, 682);
-        devSectionWarningLabel.Text = "로그인 UI 구현 전까지 임시 사용. 프로덕션 빌드 전에 제거됩니다.";
-
-        devTokenLabel.AutoSize = true;
-        devTokenLabel.Font = AppTheme.BodyBold;
-        devTokenLabel.ForeColor = AppTheme.TextPrimary;
-        devTokenLabel.Location = new Point(28, 712);
-        devTokenLabel.Text = "Dev Access Token (JWT)";
-
-        devTokenTextBox.BorderStyle = BorderStyle.FixedSingle;
-        devTokenTextBox.Font = new Font("Consolas", 9.5f);
-        devTokenTextBox.Location = new Point(28, 736);
-        devTokenTextBox.Multiline = true;
-        devTokenTextBox.ScrollBars = ScrollBars.Vertical;
-        devTokenTextBox.Size = new Size(680, 80);
-        devTokenTextBox.WordWrap = true;
-
-        saveTokenButton.BackColor = AppTheme.Accent;
-        saveTokenButton.FlatAppearance.BorderSize = 0;
-        saveTokenButton.FlatStyle = FlatStyle.Flat;
-        saveTokenButton.Font = AppTheme.BodyBold;
-        saveTokenButton.ForeColor = Color.White;
-        saveTokenButton.Location = new Point(28, 828);
-        saveTokenButton.Size = new Size(120, 36);
-        saveTokenButton.Text = "저장";
-        saveTokenButton.UseVisualStyleBackColor = false;
-        saveTokenButton.Click += SaveTokenButton_Click;
-
-        tokenStatusLabel.AutoSize = true;
-        tokenStatusLabel.Font = AppTheme.Body;
-        tokenStatusLabel.ForeColor = AppTheme.TextMuted;
-        tokenStatusLabel.Location = new Point(160, 838);
-        tokenStatusLabel.Text = "토큰 없음";
-
         // ── 로그아웃 ──────────────────────────────────
         signOutButton.BackColor = Color.White;
         signOutButton.FlatAppearance.BorderColor = AppTheme.Danger;
@@ -273,7 +215,7 @@ partial class SettingsPage
         signOutButton.FlatStyle = FlatStyle.Flat;
         signOutButton.Font = AppTheme.BodyBold;
         signOutButton.ForeColor = AppTheme.Danger;
-        signOutButton.Location = new Point(28, 892);
+        signOutButton.Location = new Point(28, 656);
         signOutButton.Size = new Size(180, 44);
         signOutButton.Text = "로그아웃";
         signOutButton.UseVisualStyleBackColor = false;
@@ -301,12 +243,6 @@ partial class SettingsPage
         profileCard.Controls.Add(confirmPasswordBox);
         profileCard.Controls.Add(changePasswordButton);
         profileCard.Controls.Add(passwordStatusLabel);
-        profileCard.Controls.Add(devSectionHeaderLabel);
-        profileCard.Controls.Add(devSectionWarningLabel);
-        profileCard.Controls.Add(devTokenLabel);
-        profileCard.Controls.Add(devTokenTextBox);
-        profileCard.Controls.Add(saveTokenButton);
-        profileCard.Controls.Add(tokenStatusLabel);
         profileCard.Controls.Add(signOutButton);
         profileCard.Dock = DockStyle.Fill;
 

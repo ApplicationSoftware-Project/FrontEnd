@@ -20,13 +20,19 @@ public partial class OverviewPage : UserControl, IRefreshablePage
         SetRecentReceipts(Array.Empty<ReceiptSummary>());
         try
         {
-            var trend = await ReceiptApi.GetMonthlyTrendAsync();
+            var list = await ReceiptApi.GetListAsync(page: 1, pageSize: 100);
             var now = DateTime.Now;
-            var thisMonth = trend.FirstOrDefault(t => t.Year == now.Year && t.Month == now.Month);
-            SetMonthlyExpense(thisMonth is not null ? (decimal)thisMonth.TotalAmount : 0m);
+
+            // 이번 달 지출: 구매일/업로드일(로컬) 기준으로 이번 달 합산.
+            // (백엔드 monthly-trend는 UTC 기준이라 월초 영수증이 전월로 밀려 월별/일별 화면과 어긋난다.)
+            var monthlyTotal = list.Items
+                .Where(r => r.Amount.HasValue)
+                .Select(r => (Date: (r.PurchasedAt ?? r.CreatedAt).LocalDateTime, Amount: r.Amount!.Value))
+                .Where(x => x.Date.Year == now.Year && x.Date.Month == now.Month)
+                .Sum(x => x.Amount);
+            SetMonthlyExpense(monthlyTotal);
 
             // 최근 영수증 (구매일/업로드일 기준 내림차순). SetRecentReceipts가 5건으로 제한한다.
-            var list = await ReceiptApi.GetListAsync(page: 1, pageSize: 100);
             var recent = list.Items
                 .OrderByDescending(r => r.PurchasedAt ?? r.CreatedAt)
                 .ToList();

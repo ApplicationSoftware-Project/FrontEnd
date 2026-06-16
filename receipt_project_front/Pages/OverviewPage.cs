@@ -17,14 +17,25 @@ public partial class OverviewPage : UserControl, IRefreshablePage
     public async void OnNavigatedTo()
     {
         SetMonthlyExpense(0m);
+        SetRecentReceipts(Array.Empty<ReceiptSummary>());
         try
         {
             var trend = await ReceiptApi.GetMonthlyTrendAsync();
             var now = DateTime.Now;
             var thisMonth = trend.FirstOrDefault(t => t.Year == now.Year && t.Month == now.Month);
             SetMonthlyExpense(thisMonth is not null ? (decimal)thisMonth.TotalAmount : 0m);
+
+            // 최근 영수증 (구매일/업로드일 기준 내림차순). SetRecentReceipts가 5건으로 제한한다.
+            var list = await ReceiptApi.GetListAsync(page: 1, pageSize: 100);
+            var recent = list.Items
+                .OrderByDescending(r => r.PurchasedAt ?? r.CreatedAt)
+                .ToList();
+            SetRecentReceipts(recent);
         }
-        catch { }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Overview] 데이터를 불러오지 못했습니다: {ex.Message}");
+        }
     }
 
     public void SetMonthlyExpense(decimal amount)

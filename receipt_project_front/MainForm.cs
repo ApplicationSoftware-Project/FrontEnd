@@ -37,6 +37,17 @@ public partial class MainForm : Form
         upload.UploadCompleted += (_, _) => Navigate(NavItem.Edit, highlight: NavItem.Upload);
         edit.SaveCompleted += (_, _) => Navigate(NavItem.Overview);
 
+        // Overview의 최근 영수증을 클릭하면 영수증 조회 페이지에서 해당 영수증을 연다.
+        if (_pages[NavItem.Overview] is OverviewPage overview &&
+            _pages[NavItem.Browser] is ReceiptBrowserPage browser)
+        {
+            overview.ReceiptSelected += (_, receiptId) =>
+            {
+                browser.PendingReceiptId = receiptId;
+                Navigate(NavItem.Browser);
+            };
+        }
+
         if (_pages[NavItem.Settings] is SettingsPage settings)
         {
             settings.SignOutRequested += (_, _) =>

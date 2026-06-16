@@ -7,6 +7,10 @@ namespace receipt_project_front.Pages;
 
 public partial class OverviewPage : UserControl, IRefreshablePage
 {
+    // 최근 영수증 행을 클릭하면 해당 영수증 ID를 전달한다. MainForm이 구독해
+    // 영수증 조회 페이지로 이동시킨다.
+    public event EventHandler<Guid>? ReceiptSelected;
+
     public OverviewPage()
     {
         InitializeComponent();
@@ -69,16 +73,18 @@ public partial class OverviewPage : UserControl, IRefreshablePage
         }
         else
         {
-            foreach (var r in receipts.Take(5))
+            // receipts는 최신→과거 순. Dock=Top은 마지막에 추가된 행이 맨 위에
+            // 오므로, 역순(과거→최신)으로 추가해 최신 영수증이 맨 위에 오게 한다.
+            foreach (var r in receipts.Take(5).Reverse())
                 receiptsListPanel.Controls.Add(BuildRow(r));
         }
 
         receiptsListPanel.ResumeLayout();
     }
 
-    private static Panel BuildRow(ReceiptSummary r)
+    private Panel BuildRow(ReceiptSummary r)
     {
-        var row = new Panel { Height = 56, Dock = DockStyle.Top, Padding = new Padding(16, 12, 16, 12) };
+        var row = new Panel { Height = 56, Dock = DockStyle.Top, Padding = new Padding(16, 12, 16, 12), Cursor = Cursors.Hand };
 
         var store = new Label
         {
@@ -120,6 +126,16 @@ public partial class OverviewPage : UserControl, IRefreshablePage
         row.Controls.Add(date);
         row.Controls.Add(amount);
         row.Controls.Add(divider);
+
+        // 행 전체(빈 영역 + 라벨들)를 클릭하면 해당 영수증을 조회 페이지에서 연다.
+        void OnRowClick(object? sender, EventArgs e) => ReceiptSelected?.Invoke(this, r.ReceiptId);
+        row.Click += OnRowClick;
+        foreach (Control child in row.Controls)
+        {
+            child.Cursor = Cursors.Hand;
+            child.Click += OnRowClick;
+        }
+
         return row;
     }
 }

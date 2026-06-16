@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.Globalization;
 using receipt_project_front.Models;
 using receipt_project_front.Services;
@@ -14,6 +15,9 @@ public partial class ReceiptBrowserPage : UserControl, IRefreshablePage
 
     // 다른 페이지(예: Overview)에서 특정 영수증을 열도록 요청할 때 설정한다.
     // 다음 OnNavigatedTo에서 목록을 불러온 뒤 해당 영수증으로 이동하고 초기화된다.
+    // 런타임 전용 속성이므로 디자이너 직렬화에서 제외한다(WFO1000).
+    [Browsable(false)]
+    [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
     public Guid? PendingReceiptId { get; set; }
 
     public ReceiptBrowserPage()

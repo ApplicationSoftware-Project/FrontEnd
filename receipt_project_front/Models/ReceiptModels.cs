@@ -53,6 +53,22 @@ public record ReceiptDetail(
     DateTimeOffset CreatedAt,
     DateTimeOffset? ProcessedAt);
 
+// 부분 수정(Partial Update): null로 보낸 필드는 변경되지 않는다.
+public record UpdateReceiptRequest(
+    string? StoreName = null,
+    decimal? Amount = null,
+    DateTimeOffset? PurchasedAt = null,
+    string? Category = null);
+
+public record UpdateReceiptResult(
+    Guid ReceiptId,
+    string StoreName,
+    decimal? Amount,
+    DateTimeOffset? PurchasedAt,
+    string? Category,
+    ReceiptStatus Status,
+    DateTimeOffset UpdatedAt);
+
 public record ConfirmReceiptCategoryRequest(string FinalCategory);
 
 public record ConfirmReceiptCategoryResult(

@@ -62,6 +62,25 @@ internal static class ReceiptApi
         throw new ApiException((int)response.StatusCode, FormatConfirmError(response.StatusCode, body));
     }
 
+    public static async Task<UpdateReceiptResult> UpdateAsync(
+        Guid receiptId,
+        UpdateReceiptRequest request,
+        CancellationToken ct = default)
+    {
+        using var response = await ApiClient.ForCurrentUser()
+            .PutAsJsonAsync($"/api/receipts/{receiptId}", request, JsonOptions, ct);
+
+        var body = await response.Content.ReadAsStringAsync(ct);
+
+        if (response.StatusCode == HttpStatusCode.OK)
+        {
+            return JsonSerializer.Deserialize<UpdateReceiptResult>(body, JsonOptions)
+                   ?? throw new ApiException(500, "서버 응답을 해석할 수 없습니다.");
+        }
+
+        throw new ApiException((int)response.StatusCode, FormatConfirmError(response.StatusCode, body));
+    }
+
     public static async Task<ReceiptListResult> GetListAsync(
         int page = 1,
         int pageSize = 50,

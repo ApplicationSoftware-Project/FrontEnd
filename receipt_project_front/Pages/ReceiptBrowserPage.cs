@@ -36,39 +36,30 @@ public partial class ReceiptBrowserPage : UserControl, IRefreshablePage
 
         EnableInlineEdit(storeNameLabel,
             getValue: () => Current?.StoreName ?? string.Empty,
-            commit: newValue =>
-            {
-                ReplaceCurrent(c => c with { StoreName = newValue });
-                storeNameLabel.Text = newValue;
-                return Task.CompletedTask;
-            },
+            commit: async newValue => await UpdateStoreNameAsync(newValue),
             minWidth: 200);
 
         EnableInlineEdit(dateLabel,
             getValue: () => (Current?.PurchasedAt ?? Current?.CreatedAt)?.LocalDateTime.ToString("yyyy-MM-dd HH:mm") ?? string.Empty,
-            commit: newValue =>
+            commit: async newValue =>
             {
                 if (DateTimeOffset.TryParseExact(newValue, "yyyy-MM-dd HH:mm",
                         CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal, out var parsed))
-                {
-                    ReplaceCurrent(c => c with { PurchasedAt = parsed });
-                    dateLabel.Text = parsed.LocalDateTime.ToString("yyyy-MM-dd HH:mm");
-                }
-                return Task.CompletedTask;
+                    await UpdateDateAsync(parsed);
+                else
+                    ShowSaveError("날짜", "형식은 yyyy-MM-dd HH:mm 입니다.");
             },
             minWidth: 200);
 
         EnableInlineEdit(amountLabel,
             getValue: () => Current?.Amount?.ToString("0.##", CultureInfo.InvariantCulture) ?? string.Empty,
-            commit: newValue =>
+            commit: async newValue =>
             {
                 var cleaned = newValue.Replace(",", string.Empty).Trim();
                 if (decimal.TryParse(cleaned, NumberStyles.Number, CultureInfo.InvariantCulture, out var amount))
-                {
-                    ReplaceCurrent(c => c with { Amount = amount });
-                    amountLabel.Text = "합계 " + amount.ToString("N0", CultureInfo.InvariantCulture);
-                }
-                return Task.CompletedTask;
+                    await UpdateAmountAsync(amount);
+                else
+                    ShowSaveError("금액", "숫자만 입력해 주세요.");
             },
             minWidth: 200);
     }
@@ -104,6 +95,52 @@ public partial class ReceiptBrowserPage : UserControl, IRefreshablePage
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
     }
+
+    private async Task UpdateStoreNameAsync(string newName)
+    {
+        var current = Current;
+        if (current is null) return;
+
+        try
+        {
+            await ReceiptApi.UpdateAsync(current.ReceiptId, new UpdateReceiptRequest(StoreName: newName));
+            ReplaceCurrent(c => c with { StoreName = newName });
+            storeNameLabel.Text = newName;
+        }
+        catch (Exception ex) { ShowSaveError("상호명", ex.Message); }
+    }
+
+    private async Task UpdateDateAsync(DateTimeOffset purchasedAt)
+    {
+        var current = Current;
+        if (current is null) return;
+
+        try
+        {
+            await ReceiptApi.UpdateAsync(current.ReceiptId, new UpdateReceiptRequest(PurchasedAt: purchasedAt));
+            ReplaceCurrent(c => c with { PurchasedAt = purchasedAt });
+            dateLabel.Text = purchasedAt.LocalDateTime.ToString("yyyy-MM-dd HH:mm");
+        }
+        catch (Exception ex) { ShowSaveError("날짜", ex.Message); }
+    }
+
+    private async Task UpdateAmountAsync(decimal amount)
+    {
+        var current = Current;
+        if (current is null) return;
+
+        try
+        {
+            await ReceiptApi.UpdateAsync(current.ReceiptId, new UpdateReceiptRequest(Amount: amount));
+            ReplaceCurrent(c => c with { Amount = amount });
+            amountLabel.Text = "합계 " + amount.ToString("N0", CultureInfo.InvariantCulture);
+        }
+        catch (Exception ex) { ShowSaveError("금액", ex.Message); }
+    }
+
+    private static void ShowSaveError(string field, string message) =>
+        MessageBox.Show($"{field} 저장 실패: {message}", "저장 실패",
+            MessageBoxButtons.OK, MessageBoxIcon.Warning);
 
     public async void OnNavigatedTo()
     {

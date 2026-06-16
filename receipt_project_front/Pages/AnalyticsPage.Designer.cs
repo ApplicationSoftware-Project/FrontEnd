@@ -19,6 +19,10 @@ partial class AnalyticsPage
     private FlowLayoutPanel subNav;
     private LinkLabel monthlyLink;
     private LinkLabel dailyLink;
+    private LinkLabel categoryLink;
+    private Panel categoryHeader;
+    private Label monthSelectorLabel;
+    private ComboBox monthSelector;
     private Panel contentCard;
     private Label statusLabel;
     private CartesianChart cartesianChart;
@@ -30,6 +34,10 @@ partial class AnalyticsPage
         subNav = new FlowLayoutPanel();
         monthlyLink = new LinkLabel();
         dailyLink = new LinkLabel();
+        categoryLink = new LinkLabel();
+        categoryHeader = new Panel();
+        monthSelectorLabel = new Label();
+        monthSelector = new ComboBox();
         contentCard = new Panel();
         statusLabel = new Label();
         cartesianChart = new CartesianChart();
@@ -59,17 +67,61 @@ partial class AnalyticsPage
         dailyLink.LinkBehavior = LinkBehavior.HoverUnderline;
         dailyLink.LinkColor = AppTheme.TextSecondary;
         dailyLink.ActiveLinkColor = AppTheme.Accent;
-        dailyLink.Margin = new Padding(0, 0, 24, 0);
+        dailyLink.Margin = new Padding(0, 0, 24, 8);
         dailyLink.Text = "•  일별";
 
-        // subNav
+        // categoryLink — inactive by default
+        categoryLink.AutoSize = true;
+        categoryLink.Font = AppTheme.H3;
+        categoryLink.LinkBehavior = LinkBehavior.HoverUnderline;
+        categoryLink.LinkColor = AppTheme.TextSecondary;
+        categoryLink.ActiveLinkColor = AppTheme.Accent;
+        categoryLink.Margin = new Padding(0, 0, 24, 0);
+        categoryLink.Text = "•  카테고리별";
+
+        // subNav — taller to accommodate 3 links
         subNav.AutoSize = false;
         subNav.Controls.Add(monthlyLink);
         subNav.Controls.Add(dailyLink);
+        subNav.Controls.Add(categoryLink);
         subNav.Dock = DockStyle.Top;
         subNav.FlowDirection = FlowDirection.TopDown;
-        subNav.Height = 80;
+        subNav.Height = 108;
         subNav.Padding = new Padding(8, 8, 8, 8);
+
+        // monthSelectorLabel
+        monthSelectorLabel.AutoSize = true;
+        monthSelectorLabel.Font = AppTheme.Body;
+        monthSelectorLabel.ForeColor = AppTheme.TextPrimary;
+        monthSelectorLabel.Text = "월 선택:";
+        monthSelectorLabel.TextAlign = ContentAlignment.MiddleLeft;
+        monthSelectorLabel.Margin = new Padding(0, 4, 6, 0);
+
+        // monthSelector
+        monthSelector.DropDownStyle = ComboBoxStyle.DropDownList;
+        monthSelector.Width = 140;
+        monthSelector.Font = AppTheme.Body;
+        monthSelector.Margin = new Padding(0, 0, 0, 0);
+
+        // categoryHeader — right-aligned month picker, hidden unless Category view is active
+        // Uses an inner FlowLayoutPanel (RightToLeft) so the label+combobox hug the right edge.
+        var headerFlow = new FlowLayoutPanel
+        {
+            Dock = DockStyle.Fill,
+            FlowDirection = FlowDirection.RightToLeft,
+            WrapContents = false,
+            AutoSize = false,
+            Padding = new Padding(0, 8, 8, 0)
+        };
+        // In RightToLeft flow: first added = rightmost
+        headerFlow.Controls.Add(monthSelector);
+        headerFlow.Controls.Add(monthSelectorLabel);
+
+        categoryHeader.BackColor = AppTheme.CardBg;
+        categoryHeader.Dock = DockStyle.Top;
+        categoryHeader.Height = 44;
+        categoryHeader.Visible = false;
+        categoryHeader.Controls.Add(headerFlow);
 
         // statusLabel
         statusLabel.AutoSize = false;
@@ -84,11 +136,15 @@ partial class AnalyticsPage
         cartesianChart.Dock = DockStyle.Fill;
         cartesianChart.Visible = false;
 
-        // contentCard — cartesianChart first so statusLabel sits on top initially
+        // contentCard — Controls.Add order controls docking precedence:
+        //   later-added Dock=Top controls occupy outer (higher) positions.
+        //   subNav added last → very top; categoryHeader added before it → just below subNav.
+        //   Both Dock=Fill controls (statusLabel on top of cartesianChart) fill remaining space.
         contentCard.BackColor = AppTheme.CardBg;
         contentCard.BorderStyle = BorderStyle.FixedSingle;
         contentCard.Controls.Add(cartesianChart);
         contentCard.Controls.Add(statusLabel);
+        contentCard.Controls.Add(categoryHeader);
         contentCard.Controls.Add(subNav);
         contentCard.Dock = DockStyle.Fill;
 

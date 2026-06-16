@@ -57,7 +57,6 @@ desktop.ini
 appsettings.*.local.json
 *.pfx
 *.key
+
+# AI assistant
 .claude/
-receipt_project_front/obj/
-receipt_project_front/bin/
-.vs/

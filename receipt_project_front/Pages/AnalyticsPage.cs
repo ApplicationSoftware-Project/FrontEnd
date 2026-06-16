@@ -85,7 +85,7 @@ public partial class AnalyticsPage : UserControl, IRefreshablePage
 
     private async Task LoadDailyAsync()
     {
-        var list = await ReceiptApi.GetListAsync(page: 1, pageSize: 200);
+        var list = await ReceiptApi.GetListAsync(page: 1, pageSize: 100);
         var now = DateTime.Now;
 
         var daily = list.Items

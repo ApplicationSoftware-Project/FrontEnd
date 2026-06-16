@@ -57,11 +57,21 @@ public partial class AnalyticsPage : UserControl, IRefreshablePage
 
     private async Task LoadMonthlyAsync()
     {
-        var trend = await ReceiptApi.GetMonthlyTrendAsync();
-        if (trend.Count == 0) { ShowStatus("데이터가 없습니다."); return; }
+        var list = await ReceiptApi.GetListAsync(page: 1, pageSize: 100);
 
-        var labels = trend.Select(t => $"{t.Year}-{t.Month:D2}").ToArray();
-        var values = trend.Select(t => t.TotalAmount).ToArray();
+        // 백엔드 monthly-trend는 UTC 기준으로 월을 집계해 월초 영수증이 전월로 밀린다
+        // (예: 2026-05-01 → 4월). 일별 분석과 동일하게 LocalDateTime 기준으로 직접 집계한다.
+        var monthly = list.Items
+            .Where(r => r.Amount.HasValue)
+            .Select(r => (Date: (r.PurchasedAt ?? r.CreatedAt).LocalDateTime, Amount: r.Amount!.Value))
+            .GroupBy(x => new { x.Date.Year, x.Date.Month })
+            .OrderBy(g => g.Key.Year).ThenBy(g => g.Key.Month)
+            .ToList();
+
+        if (monthly.Count == 0) { ShowStatus("데이터가 없습니다."); return; }
+
+        var labels = monthly.Select(g => $"{g.Key.Year}-{g.Key.Month:D2}").ToArray();
+        var values = monthly.Select(g => (double)g.Sum(x => x.Amount)).ToArray();
 
         cartesianChart.Series = new ISeries[]
         {
@@ -85,7 +95,7 @@ public partial class AnalyticsPage : UserControl, IRefreshablePage
 
     private async Task LoadDailyAsync()
     {
-        var list = await ReceiptApi.GetListAsync(page: 1, pageSize: 200);
+        var list = await ReceiptApi.GetListAsync(page: 1, pageSize: 100);
         var now = DateTime.Now;
 
         var daily = list.Items

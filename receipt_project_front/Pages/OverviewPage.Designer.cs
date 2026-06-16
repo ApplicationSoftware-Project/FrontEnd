@@ -65,7 +65,8 @@ partial class OverviewPage
         monthlyCaptionLabel.Font = AppTheme.Caption;
         monthlyCaptionLabel.ForeColor = AppTheme.TextMuted;
         monthlyCaptionLabel.Location = new Point(28, 168);
-        monthlyCaptionLabel.Text = "이번 달 등록된 영수증의 총합";
+        // 실제 텍스트(예: "2026년 6월")는 OverviewPage에서 현재 월 기준으로 설정한다.
+        monthlyCaptionLabel.Text = string.Empty;
 
         // monthlyCard
         monthlyCard.BackColor = AppTheme.CardBg;

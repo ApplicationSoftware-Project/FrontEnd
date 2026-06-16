@@ -12,6 +12,10 @@ public partial class ReceiptBrowserPage : UserControl, IRefreshablePage
     private CancellationTokenSource? _imageCts;
     private bool _loadingList;
 
+    // 다른 페이지(예: Overview)에서 특정 영수증을 열도록 요청할 때 설정한다.
+    // 다음 OnNavigatedTo에서 목록을 불러온 뒤 해당 영수증으로 이동하고 초기화된다.
+    public Guid? PendingReceiptId { get; set; }
+
     public ReceiptBrowserPage()
     {
         InitializeComponent();
@@ -107,7 +111,18 @@ public partial class ReceiptBrowserPage : UserControl, IRefreshablePage
         {
             var list = await ReceiptApi.GetListAsync();
             _receipts = list.Items.ToList();
-            _index = 0;
+
+            // Overview 등에서 특정 영수증을 지정했으면 그 영수증으로 이동한다.
+            if (PendingReceiptId is { } targetId)
+            {
+                var target = _receipts.FindIndex(r => r.ReceiptId == targetId);
+                _index = target >= 0 ? target : 0;
+                PendingReceiptId = null;
+            }
+            else
+            {
+                _index = 0;
+            }
 
             if (_receipts.Count == 0)
                 ApplyEmptyState("표시할 영수증이 없습니다");

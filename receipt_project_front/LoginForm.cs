@@ -1,4 +1,3 @@
-using receipt_project_front.Models;
 using receipt_project_front.Services;
 using receipt_project_front.UI;
 
@@ -7,15 +6,10 @@ namespace receipt_project_front;
 public partial class LoginForm : Form
 {
     private bool _busy;
-    
 
     public LoginForm()
     {
         InitializeComponent();
-
-        // 추가: 폼이 처음 로드될 때 레이아웃 적용
-        //Load += (_, _) => LayoutControls();
-
         registerLink.LinkClicked += (_, _) => OpenRegisterForm();
         passwordBox.KeyDown += async (_, e) =>
         {
@@ -50,28 +44,38 @@ public partial class LoginForm : Form
         SetBusy(true);
         try
         {
-            var result = await AuthApi.LoginAsync(email, password);
+            // 1단계: 로그인 → AccessToken, RefreshToken 취득
+            var loginResult = await AuthApi.LoginAsync(email, password);
 
-            AppState.Current.AccessToken = result.AccessToken;
-            AppState.Current.CurrentUser = new MeResult(
-                result.UserId, result.Email, result.DisplayName,
-                result.Role, result.CreatedAt, null);
+            AppState.Current.AccessToken = loginResult.AccessToken;
+            AppState.Current.RefreshToken = loginResult.RefreshToken;
+            AppState.Current.AccessTokenExpiresAt =
+                DateTimeOffset.UtcNow.AddSeconds(loginResult.ExpiresIn);
+
+            // 2단계: /me 호출 → 전체 사용자 정보 취득
+            AppState.Current.CurrentUser = await AuthApi.GetMeAsync();
+
+            // 3단계: 백그라운드 토큰 자동 갱신 시작
+            TokenRefreshService.Start(loginResult.ExpiresIn);
 
             DialogResult = DialogResult.OK;
             Close();
         }
         catch (AuthException ex)
         {
+            AppState.Current.Clear();
             ShowError(ex.Message);
             passwordBox.Focus();
             passwordBox.SelectAll();
         }
         catch (HttpRequestException)
         {
+            AppState.Current.Clear();
             ShowError("서버에 연결할 수 없습니다. 백엔드가 실행 중인지 확인하세요.");
         }
         catch (Exception ex)
         {
+            AppState.Current.Clear();
             ShowError($"오류: {ex.Message}");
         }
         finally
@@ -112,8 +116,5 @@ public partial class LoginForm : Form
         if (busy) errorLabel.Visible = false;
     }
 
-    private void errorLabel_Click(object sender, EventArgs e)
-    {
-
-    }
+    private void errorLabel_Click(object sender, EventArgs e) { }
 }

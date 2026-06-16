@@ -28,6 +28,7 @@ partial class ReceiptBrowserPage
     private Panel navPanel;
     private Button prevButton;
     private Button nextButton;
+    private Button deleteButton;
 
     private void InitializeComponent()
     {
@@ -46,6 +47,7 @@ partial class ReceiptBrowserPage
         navPanel = new Panel();
         prevButton = new Button();
         nextButton = new Button();
+        deleteButton = new Button();
 
         SuspendLayout();
 
@@ -170,15 +172,29 @@ partial class ReceiptBrowserPage
         nextButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         nextButton.Click += NextButton_Click;
 
+        // deleteButton (현재 영수증 삭제) — navPanel 중앙
+        deleteButton.BackColor = AppTheme.Danger;
+        deleteButton.FlatAppearance.BorderSize = 0;
+        deleteButton.FlatStyle = FlatStyle.Flat;
+        deleteButton.Font = new Font(AppTheme.FontFamily, 11f, FontStyle.Bold);
+        deleteButton.ForeColor = Color.White;
+        deleteButton.Size = new Size(120, 56);
+        deleteButton.Text = "🗑  삭제";
+        deleteButton.UseVisualStyleBackColor = false;
+        deleteButton.Anchor = AnchorStyles.Top;
+        deleteButton.Click += DeleteButton_Click;
+
         // navPanel
         navPanel.Controls.Add(prevButton);
         navPanel.Controls.Add(nextButton);
+        navPanel.Controls.Add(deleteButton);
         navPanel.Dock = DockStyle.Bottom;
         navPanel.Height = 72;
         navPanel.Padding = new Padding(0, 8, 0, 0);
         navPanel.Resize += (_, _) =>
         {
             nextButton.Left = navPanel.ClientSize.Width - nextButton.Width;
+            deleteButton.Left = (navPanel.ClientSize.Width - deleteButton.Width) / 2;
         };
 
         // rootLayout

@@ -81,6 +81,22 @@ internal static class ReceiptApi
         throw new ApiException((int)response.StatusCode, FormatConfirmError(response.StatusCode, body));
     }
 
+    public static async Task DeleteAsync(
+        Guid receiptId,
+        CancellationToken ct = default)
+    {
+        using var response = await ApiClient.ForCurrentUser()
+            .DeleteAsync($"/api/receipts/{receiptId}", ct);
+
+        // 204 No Content = 성공. 멱등성 차원에서 404(이미 없음)도 성공으로 취급.
+        if (response.StatusCode == HttpStatusCode.NoContent ||
+            response.StatusCode == HttpStatusCode.NotFound)
+            return;
+
+        var body = await response.Content.ReadAsStringAsync(ct);
+        throw new ApiException((int)response.StatusCode, FormatGenericError(response.StatusCode, body));
+    }
+
     public static async Task<ReceiptListResult> GetListAsync(
         int page = 1,
         int pageSize = 50,

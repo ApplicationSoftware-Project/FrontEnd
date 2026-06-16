@@ -190,6 +190,47 @@ public partial class ReceiptBrowserPage : UserControl, IRefreshablePage
         await ShowCurrentAsync();
     }
 
+    private async void DeleteButton_Click(object? sender, EventArgs e)
+    {
+        var current = Current;
+        if (current is null) return;
+
+        var name = string.IsNullOrEmpty(current.StoreName) ? "이 영수증" : $"\"{current.StoreName}\"";
+        var confirm = MessageBox.Show(
+            $"{name}을(를) 삭제할까요?\n삭제하면 되돌릴 수 없습니다.",
+            "영수증 삭제",
+            MessageBoxButtons.YesNo, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+        if (confirm != DialogResult.Yes) return;
+
+        deleteButton.Enabled = false;
+        try
+        {
+            await ReceiptApi.DeleteAsync(current.ReceiptId);
+
+            // 로컬 목록에서 제거하고 인접 영수증으로 이동(없으면 빈 상태).
+            _receipts.RemoveAt(_index);
+            if (_receipts.Count == 0)
+            {
+                ApplyEmptyState("표시할 영수증이 없습니다");
+            }
+            else
+            {
+                if (_index >= _receipts.Count) _index = _receipts.Count - 1;
+                await ShowCurrentAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show($"삭제 실패: {ex.Message}", "삭제 실패",
+                MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+        finally
+        {
+            // 목록이 비면 비활성, 남아있으면 활성.
+            deleteButton.Enabled = _receipts.Count > 0;
+        }
+    }
+
     private async Task ShowCurrentAsync()
     {
         _imageCts?.Cancel();
@@ -210,6 +251,7 @@ public partial class ReceiptBrowserPage : UserControl, IRefreshablePage
 
         prevButton.Enabled = _receipts.Count > 1;
         nextButton.Enabled = _receipts.Count > 1;
+        deleteButton.Enabled = true;
 
         photoBox.Image?.Dispose();
         photoBox.Image = null;
@@ -241,6 +283,7 @@ public partial class ReceiptBrowserPage : UserControl, IRefreshablePage
         amountLabel.Text = string.Empty;
         prevButton.Enabled = false;
         nextButton.Enabled = false;
+        deleteButton.Enabled = false;
         photoBox.Image?.Dispose();
         photoBox.Image = null;
     }
@@ -255,6 +298,7 @@ public partial class ReceiptBrowserPage : UserControl, IRefreshablePage
         amountLabel.Text = "-";
         prevButton.Enabled = false;
         nextButton.Enabled = false;
+        deleteButton.Enabled = false;
         photoBox.Image?.Dispose();
         photoBox.Image = null;
     }

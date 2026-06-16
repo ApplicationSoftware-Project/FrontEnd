@@ -14,12 +14,21 @@ public partial class OverviewPage : UserControl, IRefreshablePage
     public OverviewPage()
     {
         InitializeComponent();
+        UpdateMonthCaption();
         SetMonthlyExpense(0m);
         SetRecentReceipts(Array.Empty<ReceiptSummary>());
     }
 
+    // "이번 달 지출" 카드의 캡션을 현재 연/월(예: "2026년 6월")로 설정한다.
+    private void UpdateMonthCaption()
+    {
+        var now = DateTime.Now;
+        monthlyCaptionLabel.Text = $"{now.Year}년 {now.Month}월";
+    }
+
     public async void OnNavigatedTo()
     {
+        UpdateMonthCaption();
         SetMonthlyExpense(0m);
         SetRecentReceipts(Array.Empty<ReceiptSummary>());
         try

@@ -15,7 +15,13 @@ partial class ReceiptBrowserPage
 
     private TableLayoutPanel rootLayout;
     private Label titleLabel;
-    private TableLayoutPanel splitLayout;
+    private Panel topBar;
+    private Label monthCaptionLabel;
+    private ComboBox monthSelector;
+    private TableLayoutPanel mainSplit;
+    private Panel listCard;
+    private Panel listPanel;
+    private TableLayoutPanel detailLayout;
     private Panel photoCard;
     private PictureBox photoBox;
     private Panel infoCard;
@@ -25,16 +31,20 @@ partial class ReceiptBrowserPage
     private Label storeNameLabel;
     private Label dateLabel;
     private Label amountLabel;
-    private Panel navPanel;
-    private Button prevButton;
-    private Button nextButton;
+    private Panel actionPanel;
     private Button deleteButton;
 
     private void InitializeComponent()
     {
         rootLayout = new TableLayoutPanel();
         titleLabel = new Label();
-        splitLayout = new TableLayoutPanel();
+        topBar = new Panel();
+        monthCaptionLabel = new Label();
+        monthSelector = new ComboBox();
+        mainSplit = new TableLayoutPanel();
+        listCard = new Panel();
+        listPanel = new Panel();
+        detailLayout = new TableLayoutPanel();
         photoCard = new Panel();
         photoBox = new PictureBox();
         infoCard = new Panel();
@@ -44,9 +54,7 @@ partial class ReceiptBrowserPage
         storeNameLabel = new Label();
         dateLabel = new Label();
         amountLabel = new Label();
-        navPanel = new Panel();
-        prevButton = new Button();
-        nextButton = new Button();
+        actionPanel = new Panel();
         deleteButton = new Button();
 
         SuspendLayout();
@@ -59,6 +67,38 @@ partial class ReceiptBrowserPage
         titleLabel.Text = "영수증 조회";
         titleLabel.TextAlign = ContentAlignment.BottomLeft;
 
+        // monthCaptionLabel
+        monthCaptionLabel.AutoSize = true;
+        monthCaptionLabel.Font = AppTheme.Body;
+        monthCaptionLabel.ForeColor = AppTheme.TextSecondary;
+        monthCaptionLabel.Location = new Point(2, 14);
+        monthCaptionLabel.Text = "월 선택";
+
+        // monthSelector
+        monthSelector.DropDownStyle = ComboBoxStyle.DropDownList;
+        monthSelector.FlatStyle = FlatStyle.Flat;
+        monthSelector.Font = AppTheme.Body;
+        monthSelector.Location = new Point(72, 10);
+        monthSelector.Size = new Size(180, 28);
+        monthSelector.SelectedIndexChanged += MonthSelector_SelectedIndexChanged;
+
+        // topBar
+        topBar.Controls.Add(monthCaptionLabel);
+        topBar.Controls.Add(monthSelector);
+        topBar.Dock = DockStyle.Fill;
+
+        // listPanel (스크롤되는 영수증 목록 컨테이너)
+        listPanel.AutoScroll = true;
+        listPanel.BackColor = AppTheme.CardBg;
+        listPanel.Dock = DockStyle.Fill;
+
+        // listCard
+        listCard.BackColor = AppTheme.CardBg;
+        listCard.BorderStyle = BorderStyle.FixedSingle;
+        listCard.Controls.Add(listPanel);
+        listCard.Dock = DockStyle.Fill;
+        listCard.Margin = new Padding(0, 0, 8, 0);
+
         // photoBox
         photoBox.BackColor = AppTheme.ContentBg;
         photoBox.Dock = DockStyle.Fill;
@@ -69,7 +109,7 @@ partial class ReceiptBrowserPage
         photoCard.BorderStyle = BorderStyle.FixedSingle;
         photoCard.Controls.Add(photoBox);
         photoCard.Dock = DockStyle.Fill;
-        photoCard.Margin = new Padding(0, 0, 8, 0);
+        photoCard.Margin = new Padding(8, 0, 0, 8);
         photoCard.Padding = new Padding(8);
 
         // categoryLabel (editable)
@@ -93,8 +133,7 @@ partial class ReceiptBrowserPage
         storeNameLabel.Margin = new Padding(0, 0, 0, 0);
         storeNameLabel.Text = "상호명";
 
-        // topRowFlow — height covers the H2 font (~25px) plus top padding plus
-        // bottom breathing room, so dateLabel below doesn't overlap.
+        // topRowFlow
         topRowFlow.AutoSize = false;
         topRowFlow.Controls.Add(categoryLabel);
         topRowFlow.Controls.Add(separatorLabel);
@@ -125,88 +164,67 @@ partial class ReceiptBrowserPage
         amountLabel.Text = "합계 -";
         amountLabel.TextAlign = ContentAlignment.MiddleLeft;
 
-        // infoCard (Dock=Top stack: amount, date, topRow — order is reversed because Dock=Top stacks bottom-first)
+        // infoCard (Dock=Top stack: amount, date, topRow — Dock=Top stacks bottom-first)
         infoCard.BackColor = AppTheme.CardBg;
         infoCard.BorderStyle = BorderStyle.FixedSingle;
         infoCard.Controls.Add(amountLabel);
         infoCard.Controls.Add(dateLabel);
         infoCard.Controls.Add(topRowFlow);
         infoCard.Dock = DockStyle.Fill;
-        infoCard.Margin = new Padding(8, 0, 0, 0);
+        infoCard.Margin = new Padding(8, 0, 0, 8);
 
-        // splitLayout
-        splitLayout.ColumnCount = 2;
-        splitLayout.RowCount = 1;
-        splitLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
-        splitLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50f));
-        splitLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
-        splitLayout.Controls.Add(photoCard, 0, 0);
-        splitLayout.Controls.Add(infoCard, 1, 0);
-        splitLayout.Dock = DockStyle.Fill;
-        splitLayout.Margin = new Padding(0);
-
-        // prevButton (◀)
-        prevButton.BackColor = AppTheme.CardBg;
-        prevButton.FlatAppearance.BorderColor = AppTheme.CardBorder;
-        prevButton.FlatAppearance.BorderSize = 1;
-        prevButton.FlatStyle = FlatStyle.Flat;
-        prevButton.Font = new Font(AppTheme.FontFamily, 18f, FontStyle.Bold);
-        prevButton.ForeColor = AppTheme.TextPrimary;
-        prevButton.Location = new Point(0, 0);
-        prevButton.Size = new Size(56, 56);
-        prevButton.Text = "‹";
-        prevButton.UseVisualStyleBackColor = false;
-        prevButton.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-        prevButton.Click += PrevButton_Click;
-
-        // nextButton (▶)
-        nextButton.BackColor = AppTheme.CardBg;
-        nextButton.FlatAppearance.BorderColor = AppTheme.CardBorder;
-        nextButton.FlatAppearance.BorderSize = 1;
-        nextButton.FlatStyle = FlatStyle.Flat;
-        nextButton.Font = new Font(AppTheme.FontFamily, 18f, FontStyle.Bold);
-        nextButton.ForeColor = AppTheme.TextPrimary;
-        nextButton.Size = new Size(56, 56);
-        nextButton.Text = "›";
-        nextButton.UseVisualStyleBackColor = false;
-        nextButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        nextButton.Click += NextButton_Click;
-
-        // deleteButton (현재 영수증 삭제) — navPanel 중앙
+        // deleteButton (현재 영수증 삭제)
         deleteButton.BackColor = AppTheme.Danger;
         deleteButton.FlatAppearance.BorderSize = 0;
         deleteButton.FlatStyle = FlatStyle.Flat;
         deleteButton.Font = new Font(AppTheme.FontFamily, 11f, FontStyle.Bold);
         deleteButton.ForeColor = Color.White;
-        deleteButton.Size = new Size(120, 56);
+        deleteButton.Dock = DockStyle.Right;
+        deleteButton.Width = 120;
         deleteButton.Text = "🗑  삭제";
         deleteButton.UseVisualStyleBackColor = false;
-        deleteButton.Anchor = AnchorStyles.Top;
         deleteButton.Click += DeleteButton_Click;
 
-        // navPanel
-        navPanel.Controls.Add(prevButton);
-        navPanel.Controls.Add(nextButton);
-        navPanel.Controls.Add(deleteButton);
-        navPanel.Dock = DockStyle.Bottom;
-        navPanel.Height = 72;
-        navPanel.Padding = new Padding(0, 8, 0, 0);
-        navPanel.Resize += (_, _) =>
-        {
-            nextButton.Left = navPanel.ClientSize.Width - nextButton.Width;
-            deleteButton.Left = (navPanel.ClientSize.Width - deleteButton.Width) / 2;
-        };
+        // actionPanel
+        actionPanel.Controls.Add(deleteButton);
+        actionPanel.Dock = DockStyle.Fill;
+        actionPanel.Margin = new Padding(8, 0, 0, 0);
+        actionPanel.Padding = new Padding(0, 4, 0, 4);
+
+        // detailLayout (오른쪽 상세: 사진 / 정보 / 액션)
+        detailLayout.ColumnCount = 1;
+        detailLayout.RowCount = 3;
+        detailLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
+        detailLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 58f));
+        detailLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 42f));
+        detailLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60f));
+        detailLayout.Controls.Add(photoCard, 0, 0);
+        detailLayout.Controls.Add(infoCard, 0, 1);
+        detailLayout.Controls.Add(actionPanel, 0, 2);
+        detailLayout.Dock = DockStyle.Fill;
+        detailLayout.Margin = new Padding(0);
+
+        // mainSplit (왼쪽 목록 | 오른쪽 상세)
+        mainSplit.ColumnCount = 2;
+        mainSplit.RowCount = 1;
+        mainSplit.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 38f));
+        mainSplit.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 62f));
+        mainSplit.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
+        mainSplit.Controls.Add(listCard, 0, 0);
+        mainSplit.Controls.Add(detailLayout, 1, 0);
+        mainSplit.Dock = DockStyle.Fill;
+        mainSplit.Margin = new Padding(0);
 
         // rootLayout
         rootLayout.ColumnCount = 1;
         rootLayout.RowCount = 3;
         rootLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 60f));
+        rootLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 48f));
         rootLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100f));
-        rootLayout.RowStyles.Add(new RowStyle(SizeType.Absolute, 80f));
         rootLayout.Controls.Add(titleLabel, 0, 0);
-        rootLayout.Controls.Add(splitLayout, 0, 1);
-        rootLayout.Controls.Add(navPanel, 0, 2);
+        rootLayout.Controls.Add(topBar, 0, 1);
+        rootLayout.Controls.Add(mainSplit, 0, 2);
         rootLayout.Dock = DockStyle.Fill;
         rootLayout.Padding = new Padding(32);
         rootLayout.BackColor = AppTheme.ContentBg;
